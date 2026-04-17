@@ -269,10 +269,11 @@ const openSections = {};
 
 CONFIG.sections.forEach(s => {
   openSections[s.id] = true;
-  s.tasks.forEach((task, i) => {
-    const key = s.id + "_" + i;
-    task._key = key;
-    state[key] = false;
+  s.tasks = s.tasks.map((task, i) => {
+    const obj = typeof task === "string" ? { text: task } : task;
+    obj._key = s.id + "_" + i;
+    state[obj._key] = false;
+    return obj;
   });
 });
 
@@ -323,10 +324,9 @@ function render() {
     body.className = "section-body" + (openSections[s.id] ? "" : " collapsed");
 
     s.tasks.forEach(task => {
-      const isObj = typeof task === "object";
       const key = task._key;
-      const text = isObj ? task.text : task;
-      const time = isObj && task.time ? task.time : null;
+      const text = task.text;
+      const time = task.time || null;
 
       if (time) {
         const lbl = document.createElement("div");
